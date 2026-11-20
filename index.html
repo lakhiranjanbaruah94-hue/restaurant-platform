@@ -160,7 +160,22 @@ footer {
   .menu { grid-template-columns:1fr; }
   .cart-item { flex-wrap:wrap; }
 }
-</style>
+#floatingCart {
+  display: none;
+  position: fixed;
+  bottom: 15px;
+  left: 5%;
+  width: 90%;
+  padding: 15px;
+  background: #17243A;
+  color: #C5A46D;
+  border: 1px solid #C5A46D;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  z-index: 9999;
+  box-shadow: 0 4px 15px #0003;
+  }</style>
 </head>
 <body>
 
@@ -183,7 +198,9 @@ footer {
     </button>
     <p class="note">Demo checkout — online ordering will be connected later.</p>
   </section>
-</main>
+<button id="floatingCart" onclick="openCart()">
+  🛒 View Cart · <span id="cartCount">0</span> items · ₹<span id="cartAmount">0</span>
+</button></main>
 
 <footer>
   LAKHI FASTFOOD<br>
