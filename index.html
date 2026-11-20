@@ -155,5 +155,29 @@ renderCategories();
 renderMenu();
 updateCart();
 </script>
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const orderButton = document.querySelector(".checkout");
+
+  if (!orderButton) return;
+
+  orderButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    const name = prompt("Enter your name:");
+    if (!name || !name.trim()) return;
+
+    const phone = prompt("Enter your 10-digit mobile number:");
+    if (!phone || !/^[6-9]\d{9}$/.test(phone.trim())) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+
+    alert("Thank you, " + name +
+      "! Your details have been received.\nPhone: " + phone);
+  }, true);
+});
+  </script>
 </body>
 </html>
