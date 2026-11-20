@@ -4,35 +4,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Restaurant Platform</title>
+<title>Lakhi Fastfood</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#fffaf3;color:#252525}
-header{background:#171717;color:white;padding:22px 16px;text-align:center}
-header h1{margin:0;color:#ffb52e}
-header p{margin:8px 0 0;color:#ddd}
-.container{max-width:850px;margin:auto;padding:18px}
+body{margin:0;background:#fff9f2;color:#222;font-family:Arial,sans-serif}
+header{background:#171717;color:white;text-align:center;padding:30px 12px}
+header h1{margin:0;color:#ffb52e;font-size:34px}
+header p{margin:10px 0 0;color:#ddd}
+.container{max-width:850px;margin:auto;padding:20px}
 h2{margin-top:24px}
-.categories{display:flex;gap:9px;overflow-x:auto;padding:10px 0}
-.categories button{border:0;border-radius:22px;padding:11px 17px;background:#eee;white-space:nowrap}
+.categories{display:flex;gap:9px;overflow-x:auto;padding:12px 0}
+.categories button{border:0;border-radius:30px;padding:14px 20px;background:#eee;font-size:16px;white-space:nowrap}
 .categories button.active{background:#ffb52e}
-.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:13px}
-.item{background:white;border-radius:14px;padding:15px;box-shadow:0 2px 9px #0001}
-.item h3{font-size:16px;margin:5px 0 10px}
-.price{font-weight:bold;color:#d66a00}
-.item button,.checkout{background:#171717;color:white;border:0;border-radius:9px;padding:10px;width:100%;margin-top:12px}
-.cart{position:sticky;bottom:10px;background:#ffb52e;padding:15px;border-radius:12px;margin-top:22px;display:flex;justify-content:space-between;align-items:center}
-.cart button{background:#171717;color:white;border:0;padding:11px 16px;border-radius:8px}
+.menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.item{background:white;border-radius:18px;padding:18px;box-shadow:0 5px 18px #0000000c}
+.item p{margin:5px 0}
+.item h3{font-size:19px;margin:10px 0}
+.price{font-weight:bold;color:#d66a00;font-size:20px}
+.item button,.checkout{background:#171717;color:white;border:0;border-radius:12px;padding:14px;width:100%;font-size:16px;margin-top:10px}
+.cart{position:sticky;bottom:10px;background:#ffb52e;padding:15px;border-radius:18px;margin-top:20px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cart button{background:#171717;color:white;border:0;border-radius:10px;padding:13px;font-size:15px}
+.cart-panel{background:white;border-radius:16px;padding:18px;margin-top:15px;display:none}
+.cart-row{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #eee;padding:12px 0}
+.qty button{padding:7px 12px;border:0;border-radius:7px;background:#eee;font-size:17px}
 footer{text-align:center;padding:25px;color:#777}
+@media(max-width:420px){.menu{gap:10px}.item{padding:14px}.item h3{font-size:17px}.cart{font-size:14px}}
 </style>
 </head>
 <body>
+
 <header>
 <h1>🍔 Lakhi Fastfood</h1>
 <p>Fresh food • Great taste • Quick service</p>
 </header>
 
-<main class="container">
+<div class="container">
 <h2>Our Menu</h2>
 <p>Choose your favourite food and add it to your cart.</p>
 
@@ -42,36 +48,36 @@ footer{text-align:center;padding:25px;color:#777}
 <div class="cart">
 <strong>🛒 Cart: <span id="count">0</span> items</strong>
 <strong id="total">₹0</strong>
-<button onclick="showCart()">View Cart</button>
+<button onclick="toggleCart()">View Cart</button>
 </div>
-</main>
 
-<footer>Powered by Restaurant Platform</footer>
+<div class="cart-panel" id="cartPanel">
+<h2>Your Cart</h2>
+<div id="cartItems"></div>
+<h3 id="cartTotal">Total: ₹0</h3>
+<button class="checkout" onclick="placeOrder()">Place Order (Demo)</button>
+</div>
+</div>
+
+<footer>Thank you for visiting Lakhi Fastfood ❤️</footer>
 
 <script>
-const foods=[
-["Beverages","Cold Drink",30],
-["Beverages","Fresh Lime",40],
-["Beverages","Tea",15],
-["Burgers","Cheese Burger",80],
-["Burgers","Chicken Burger",100],
-["Burgers","Veg Burger",60],
-["Chowmein","Chicken Chowmein",120],
-["Chowmein","Egg Chowmein",90],
-["Chowmein","Veg Chowmein",70],
-["Fried Rice","Chicken Fried Rice",130],
-["Fried Rice","Egg Fried Rice",100],
-["Fried Rice","Veg Fried Rice",80],
-["Rolls","Chicken Roll",100],
-["Rolls","Egg Roll",70],
-["Rolls","Veg Roll",50]
+const products=[
+{id:1,name:"Cold Drink",category:"Beverages",price:30},
+{id:2,name:"Fresh Lime",category:"Beverages",price:40},
+{id:3,name:"Tea",category:"Beverages",price:15},
+{id:4,name:"Cheese Burger",category:"Burgers",price:80},
+{id:5,name:"Chicken Burger",category:"Burgers",price:100},
+{id:6,name:"Veg Burger",category:"Burgers",price:60},
+{id:7,name:"Veg Chowmein",category:"Chowmein",price:60},
+{id:8,name:"Chicken Chowmein",category:"Chowmein",price:90}
 ];
 
 let selected="All";
-let cart=[];
+let cart={};
 
-function categories(){
-const names=["All",...new Set(foods.map(f=>f[0]))];
+function renderCategories(){
+const names=["All",...new Set(products.map(p=>p.category))];
 document.getElementById("categories").innerHTML=names.map(n=>
 `<button class="${selected===n?'active':''}" onclick="filterMenu('${n}')">${n}</button>`
 ).join("");
@@ -79,39 +85,75 @@ document.getElementById("categories").innerHTML=names.map(n=>
 
 function filterMenu(name){
 selected=name;
-categories();
+renderCategories();
 renderMenu();
 }
 
 function renderMenu(){
-const list=selected==="All"?foods:foods.filter(f=>f[0]===selected);
-document.getElementById("menu").innerHTML=list.map((f)=>`
+const list=products.filter(p=>selected==="All"||p.category===selected);
+document.getElementById("menu").innerHTML=list.map(p=>`
 <div class="item">
-<small>${f[0]}</small>
-<h3>${f[1]}</h3>
-<div class="price">₹${f[2]}</div>
-<button onclick="addToCart('${f[1]}',${f[2]})">+ Add</button>
+<p>${p.category}</p>
+<h3>${p.name}</h3>
+<div class="price">₹${p.price}</div>
+<button onclick="addItem(${p.id})">+ Add</button>
 </div>`).join("");
 }
 
-function addToCart(name,price){
-cart.push({name,price});
+function addItem(id){
+cart[id]=(cart[id]||0)+1;
+updateCart();
+}
+
+function changeQty(id,change){
+cart[id]=(cart[id]||0)+change;
+if(cart[id]<=0) delete cart[id];
 updateCart();
 }
 
 function updateCart(){
-document.getElementById("count").textContent=cart.length;
-document.getElementById("total").textContent="₹"+cart.reduce((s,i)=>s+i.price,0);
+let count=0,total=0;
+Object.keys(cart).forEach(id=>{
+const p=products.find(x=>x.id==id);
+count+=cart[id];
+total+=p.price*cart[id];
+});
+document.getElementById("count").textContent=count;
+document.getElementById("total").textContent="₹"+total;
+
+document.getElementById("cartItems").innerHTML=
+Object.keys(cart).map(id=>{
+const p=products.find(x=>x.id==id);
+return `<div class="cart-row">
+<div><strong>${p.name}</strong><br>₹${p.price} each</div>
+<div class="qty">
+<button onclick="changeQty(${id},-1)">−</button>
+<strong> ${cart[id]} </strong>
+<button onclick="changeQty(${id},1)">+</button>
+</div>
+<strong>₹${p.price*cart[id]}</strong>
+</div>`;
+}).join("")||"<p>Your cart is empty.</p>";
+
+document.getElementById("cartTotal").textContent="Total: ₹"+total;
 }
 
-function showCart(){
-if(!cart.length){alert("Your cart is empty.");return;}
-let details=cart.map(i=>i.name+" - ₹"+i.price).join("\n");
-alert("Your order:\n\n"+details+"\n\nTotal: ₹"+cart.reduce((s,i)=>s+i.price,0)+"\n\nThis is a demo cart. Online ordering will be connected next.");
+function toggleCart(){
+const panel=document.getElementById("cartPanel");
+panel.style.display=panel.style.display==="block"?"none":"block";
 }
 
-categories();
+function placeOrder(){
+if(Object.keys(cart).length===0){
+alert("Your cart is empty!");
+return;
+}
+alert("This is a demo. Online ordering will be connected next.");
+}
+
+renderCategories();
 renderMenu();
+updateCart();
 </script>
 </body>
 </html>
